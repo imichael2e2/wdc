@@ -34,13 +34,17 @@ mod comm;
 pub use w3c::{W3cCapRequSetter, W3cCapaGetter, W3cCapaSetter, W3cSessResultGetter};
 
 #[cfg(feature = "firefox")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "firefox")))]
 pub use gec::any::{FirefoxCapaGetter, FirefoxCapaSetter, GeckoCapRequSetter};
 #[cfg(feature = "firefox")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "firefox")))]
 pub use gec::{FirefoxCapa, GeckoCapRequ, GeckoSessResult};
 
 #[cfg(feature = "chromium")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "chromium")))]
 pub use chr::any::{ChromCapRequSetter, ChromiumCapaGetter, ChromiumCapaSetter};
 #[cfg(feature = "chromium")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "chromium")))]
 pub use chr::{ChromCapRequ, ChromSessResult, ChromiumCapa};
 
 #[cfg(feature = "devel")]

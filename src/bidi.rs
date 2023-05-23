@@ -466,6 +466,7 @@ where
                 Ok(sess) => {
                     self.add_ssid(sess.session_id().to_string());
 
+                    // FIXME: maybe RE is overkill?
                     let re = regex::Regex::new(r"ws://(.*)/session/(.*)").unwrap();
                     let cap = re.captures(sess.wsurl().unwrap()).unwrap();
                     let raddr = cap.get(1).unwrap().as_str();

@@ -1,12 +1,12 @@
 [package]
 name = "wdc"
-version = "0.1.0"
+version = "0.1.0-beta.2"
 authors = ["Michael Lee <imichael2e2@proton.me>"]
 edition = "2021"
 description = "A WebDriver client library."
-repository = "http://somewhere"
+repository = "http://github.com/imichael2e2/wdc"
 documentation = "https://docs.rs/wdc"
-license-file = "GPL-3.0-or-later"
+license = "GPL-3.0-or-later"
 keywords = ["w3c", "webdriver", "client", "automation", "webdriver-bidi"]
 categories = ["web-programming", "network-programming"]
 exclude = ["*.bak"]
@@ -20,14 +20,13 @@ devel = []
 diag = []
 
 [dependencies]
-regex = "1.7.1"
 serde = { version = "1.0.159", features = ["derive"] }
 serde_json = "1.0.93"
+regex = "1.7.1"
 
 [dev-dependencies]
 serde_test = "1.0.159"
-glob = "0.3.1"
-libc = "0.2.142"
 
 [package.metadata.docs.rs]
 all-features = true
+rustdoc-args = ["--cfg", "doc_cfg"]

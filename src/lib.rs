@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License along with
 // Wdc. If not, see <https://www.gnu.org/licenses/>.
 
-// #![cfg_attr(doc_cfg, feature(doc_cfg))]
-#![feature(doc_auto_cfg)]
+#![cfg_attr(doc_cfg, feature(doc_cfg))]
+// #![feature(doc_auto_cfg)]
 
 //!
 //! A **W**eb**D**river **C**lient library.
@@ -84,7 +84,8 @@
 //!    Ok(())
 //! }
 //! ```
-
+#[cfg(feature = "bidi")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "bidi")))]
 #[allow(clippy::all)]
 pub mod bidi;
 
@@ -94,6 +95,7 @@ pub mod wdcmd;
 #[allow(clippy::len_zero, clippy::identity_op)]
 mod httpp;
 
+#[cfg(feature = "bidi")]
 #[allow(clippy::len_zero, clippy::identity_op, clippy::needless_range_loop)]
 mod wsp;
 
@@ -194,11 +196,15 @@ pub use genericdrv::CreateWebDrvClient;
 pub use genericdrv::WebDrvClient;
 
 #[cfg(feature = "firefox")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "firefox")))]
 pub use geckodrv::init_singl_ff;
 #[cfg(feature = "firefox")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "firefox")))]
 pub use geckodrv::GeckoDriver;
 
 #[cfg(feature = "chromium")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "chromium")))]
 pub use chromedrv::init_singl_ch;
 #[cfg(feature = "chromium")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "chromium")))]
 pub use chromedrv::ChromeDriver;
