@@ -58,6 +58,11 @@ pub(crate) fn check_fail_drvcmd(s: &[u8]) -> Result<(), WdcError> {
     }
 }
 
+pub enum RendVendor {
+    Mozilla,
+    Google,
+}
+
 ///
 /// A trait for creating new WebDriver client instances.
 pub trait CreateWebDrvClient
@@ -74,6 +79,10 @@ where
     fn new(rhost: &str, rport: u16) -> WebDrvClient<Self>
     where
         for<'de, 'c1, 'c2> Self: CreateW3cSession<'de, 'c1, 'c2>;
+
+    //
+
+    fn rend_vendor(&self) -> RendVendor;
 }
 
 ///

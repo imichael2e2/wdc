@@ -20,10 +20,12 @@ use crate::wdcmd::session::{ChromCapRequ, ChromSessResult, ChromiumCapa};
 use crate::wdcmd::session::{ChromCapRequSetter, ChromiumCapaGetter};
 use crate::wdcmd::session::{W3cCapaGetter, W3cSessResultGetter};
 
-use crate::genericdrv::WebDrvClient;
 use crate::CreateW3cSession;
 use crate::CreateWebDrvClient;
 use crate::WdcError;
+
+use crate::genericdrv::RendVendor;
+use crate::genericdrv::WebDrvClient;
 
 use crate::httpp::HttpRequestParts;
 use crate::httpp::HttpResponseParts;
@@ -48,6 +50,10 @@ impl CreateWebDrvClient for ChromeDriver {
             rstream: None,
             ssids: vec![],
         }
+    }
+
+    fn rend_vendor(&self) -> RendVendor {
+        RendVendor::Google
     }
 }
 

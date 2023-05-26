@@ -24,6 +24,7 @@ use crate::CreateW3cSession;
 use crate::CreateWebDrvClient;
 use crate::WdcError;
 
+use crate::genericdrv::RendVendor;
 use crate::genericdrv::WebDrvClient;
 
 use crate::httpp::HttpRequestParts;
@@ -50,6 +51,10 @@ impl CreateWebDrvClient for GeckoDriver {
             rstream: None,
             ssids: vec![],
         }
+    }
+
+    fn rend_vendor(&self) -> RendVendor {
+        RendVendor::Mozilla
     }
 }
 
