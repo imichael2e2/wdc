@@ -193,6 +193,7 @@ pub use genericdrv::init;
 pub use genericdrv::init_singl;
 pub use genericdrv::CreateW3cSession;
 pub use genericdrv::CreateWebDrvClient;
+pub use genericdrv::RendVendor;
 pub use genericdrv::WebDrvClient;
 
 #[cfg(feature = "firefox")]
