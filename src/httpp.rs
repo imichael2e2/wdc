@@ -1110,22 +1110,34 @@ impl HttpResponseParts {
         match template.get_content_length() {
             Ok(msgbody_len) => {
                 crate::dbgg!(msgbody_len);
-                if msgbody_len < SZ_MAX_RBUF && pbody_path.is_none() {
+                // if msgbody_len < SZ_MAX_RBUF && pbody_path.is_none() {
+                if pbody_path.is_none() {
                     // a trivial-size body
                     let msgbody_begi = 0;
                     let msgbody_endi = msgbody_len;
-                    stream
-                        .read_exact(&mut rbuf[msgbody_begi..msgbody_endi])
-                        .unwrap();
-                    template.msgbody.extend(
-                        &rbuf[msgbody_begi + insig_head_tmp..msgbody_endi - insig_tail_tmp],
-                    );
+
+                    if msgbody_len <= SZ_MAX_RBUF {
+                        stream
+                            .read_exact(&mut rbuf[msgbody_begi..msgbody_endi])
+                            .unwrap();
+                        template.msgbody.extend(
+                            &rbuf[msgbody_begi + insig_head_tmp..msgbody_endi - insig_tail_tmp],
+                        );
+                    } else {
+                        let mut big_rbuf = Vec::<u8>::with_capacity(msgbody_len);
+                        stream
+                            .read_exact(&mut big_rbuf[msgbody_begi..msgbody_endi])
+                            .unwrap();
+                        template.msgbody.extend(
+                            &big_rbuf[msgbody_begi + insig_head_tmp..msgbody_endi - insig_tail_tmp],
+                        );
+                    }
                 } else {
                     // a non-trivial body
-                    if pbody_path.is_none() {
-                        crate::dbgg!(msgbody_len);
-                        return Err(HttpError::PersistBodyPathAbsent);
-                    }
+                    // if pbody_path.is_none() {
+                    // crate::dbgg!(msgbody_len);
+                    // return Err(HttpError::PersistBodyPathAbsent);
+                    // }
                     let pbody_path = pbody_path.unwrap();
                     let pbody_file = std::fs::OpenOptions::new()
                         .write(true)

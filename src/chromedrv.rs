@@ -52,7 +52,7 @@ impl CreateWebDrvClient for ChromeDriver {
         }
     }
 
-    fn rend_vendor(&self) -> RendVendor {
+    fn rend_vendor() -> RendVendor {
         RendVendor::Google
     }
 }

@@ -82,7 +82,7 @@ where
 
     //
 
-    fn rend_vendor(&self) -> RendVendor;
+    fn rend_vendor() -> RendVendor;
 }
 
 ///
