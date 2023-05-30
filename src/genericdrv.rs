@@ -494,7 +494,7 @@ where
         }
     }
 
-    pub fn page_src(&self, save_path: Option<&str>) -> Result<(), WdcError> {
+    pub fn page_src(&self, save_path: Option<&str>) -> Result<Option<Vec<u8>>, WdcError> {
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
@@ -517,8 +517,10 @@ where
         crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
-            if resp.msgbody_persist().is_some() || resp.msgbody().len() > 0 {
-                Ok(())
+            if resp.msgbody_persist().is_some() {
+                Ok(None)
+            } else if resp.msgbody().len() > 0 {
+                Ok(Some(resp.msgbody))
             } else {
                 Err(WdcError::Buggy)
             }

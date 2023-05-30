@@ -149,8 +149,12 @@ mod webdrv_cmds {
                 let wdc = wdc::init::<RendKind>(REND_HOST, REND_PORT, 10).expect("init wdc");
 
                 wdc.navi_to("about:rights").expect("navi to");
-                wdc.page_src(Some(&pbody_file(PBODY_FILENAME_PREFIX, "pagesrc")))
+
+                let ret = wdc
+                    .page_src(Some(&pbody_file(PBODY_FILENAME_PREFIX, "pagesrc")))
                     .expect("page src");
+
+                assert!(ret.is_none());
 
                 // check file data
                 let data_got =
@@ -158,6 +162,22 @@ mod webdrv_cmds {
                         .expect("pbody file");
                 assert!(data_got.contains("<html"));
                 assert!(data_got.contains("</html>"));
+            }
+
+            #[test]
+            fn page_src2() {
+                let wdc = wdc::init::<RendKind>(REND_HOST, REND_PORT, 10).expect("init wdc");
+
+                wdc.navi_to("about:rights").expect("navi to");
+
+                let ret = wdc.page_src(None).expect("page src");
+
+                assert!(ret.is_some());
+
+                let ret = ret.unwrap();
+                let retstr = String::from_utf8_lossy(&ret);
+                assert!(retstr.contains("<html"));
+                assert!(retstr.contains("</html>"));
             }
 
             #[test]
@@ -432,10 +452,12 @@ mod webdrv_cmds {
                 let wdc = wdc::init::<RendKind>(REND_HOST, REND_PORT, 10).expect("init wdc");
 
                 wdc.navi_to("chrome://version").expect("navi to");
-                wdc.page_src(Some(&pbody_file(PBODY_FILENAME_PREFIX, "pagesrc")))
+
+                let ret = wdc
+                    .page_src(Some(&pbody_file(PBODY_FILENAME_PREFIX, "pagesrc")))
                     .expect("page src");
 
-                // sleep(Duration::from_secs(100));
+                assert!(ret.is_none());
 
                 // check file data
                 let data_got =
@@ -446,6 +468,22 @@ mod webdrv_cmds {
                 assert!(!data_got.contains("<html"));
                 assert!(data_got.contains("html"));
                 assert!(data_got.contains("body"));
+            }
+
+            #[test]
+            fn page_src2() {
+                let wdc = wdc::init::<RendKind>(REND_HOST, REND_PORT, 10).expect("init wdc");
+
+                wdc.navi_to("chrome://version").expect("navi to");
+
+                let ret = wdc.page_src(None).expect("page src");
+
+                assert!(ret.is_some());
+
+                let ret = ret.unwrap();
+                let retstr = String::from_utf8_lossy(&ret);
+                assert!(retstr.contains("html"));
+                assert!(retstr.contains("body"));
             }
 
             #[test]

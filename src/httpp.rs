@@ -1124,6 +1124,10 @@ impl HttpResponseParts {
                         );
                     } else {
                         let mut big_rbuf = Vec::<u8>::with_capacity(msgbody_len);
+                        big_rbuf.resize(msgbody_len, 0);
+                        if big_rbuf.len() < msgbody_len {
+                            panic!("buggy");
+                        }
                         stream
                             .read_exact(&mut big_rbuf[msgbody_begi..msgbody_endi])
                             .unwrap();
