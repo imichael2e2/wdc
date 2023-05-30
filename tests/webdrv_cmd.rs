@@ -149,7 +149,7 @@ mod webdrv_cmds {
                 let wdc = wdc::init::<RendKind>(REND_HOST, REND_PORT, 10).expect("init wdc");
 
                 wdc.navi_to("about:rights").expect("navi to");
-                wdc.page_src(&pbody_file(PBODY_FILENAME_PREFIX, "pagesrc"))
+                wdc.page_src(Some(&pbody_file(PBODY_FILENAME_PREFIX, "pagesrc")))
                     .expect("page src");
 
                 // check file data
@@ -432,7 +432,7 @@ mod webdrv_cmds {
                 let wdc = wdc::init::<RendKind>(REND_HOST, REND_PORT, 10).expect("init wdc");
 
                 wdc.navi_to("chrome://version").expect("navi to");
-                wdc.page_src(&pbody_file(PBODY_FILENAME_PREFIX, "pagesrc"))
+                wdc.page_src(Some(&pbody_file(PBODY_FILENAME_PREFIX, "pagesrc")))
                     .expect("page src");
 
                 // sleep(Duration::from_secs(100));

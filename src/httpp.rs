@@ -1110,7 +1110,6 @@ impl HttpResponseParts {
         match template.get_content_length() {
             Ok(msgbody_len) => {
                 crate::dbgg!(msgbody_len);
-                // if msgbody_len < SZ_MAX_RBUF && pbody_path.is_none() {
                 if pbody_path.is_none() {
                     // a trivial-size body
                     let msgbody_begi = 0;
@@ -1134,10 +1133,6 @@ impl HttpResponseParts {
                     }
                 } else {
                     // a non-trivial body
-                    // if pbody_path.is_none() {
-                    // crate::dbgg!(msgbody_len);
-                    // return Err(HttpError::PersistBodyPathAbsent);
-                    // }
                     let pbody_path = pbody_path.unwrap();
                     let pbody_file = std::fs::OpenOptions::new()
                         .write(true)

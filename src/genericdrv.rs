@@ -494,7 +494,7 @@ where
         }
     }
 
-    pub fn page_src(&self, save_path: &str) -> Result<(), WdcError> {
+    pub fn page_src(&self, save_path: Option<&str>) -> Result<(), WdcError> {
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
@@ -512,7 +512,7 @@ where
             .send_through(&mut stream)
             .unwrap();
 
-        let resp = HttpResponseParts::from_stream(&mut stream, Some(save_path), 10, 2).unwrap();
+        let resp = HttpResponseParts::from_stream(&mut stream, save_path, 10, 2).unwrap();
 
         crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
