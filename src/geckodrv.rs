@@ -85,6 +85,8 @@ pub fn init_singl_ff(
     let mut already_wait = 0u64;
     let wait_each_round = 100u64;
     let mut ready_or_not = false;
+    let mut sess_err: Option<WdcError> = None;
+    let mut rdy_err: Option<WdcError> = None;
 
     while already_wait < ready_timeout_in_micros {
         match wdc.is_ready() {
@@ -97,7 +99,7 @@ pub fn init_singl_ff(
                 continue;
             }
             Err(_e) => {
-                dbgg!(_e);
+                rdy_err = Some(_e);
                 break;
             }
         }
@@ -115,7 +117,7 @@ pub fn init_singl_ff(
                 continue;
             }
             Err(_e) => {
-                dbgg!(_e);
+                sess_err = Some(_e);
                 break;
             }
         }
@@ -126,7 +128,15 @@ pub fn init_singl_ff(
     if ready_or_not {
         Ok(wdc)
     } else {
-        Err(WdcError::WebDriverNotReady)
+        if rdy_err.is_some() {
+            let rdy_err = rdy_err.unwrap();
+            Err(rdy_err)
+        } else if sess_err.is_some() {
+            let sess_err = sess_err.unwrap();
+            Err(sess_err)
+        } else {
+            Err(WdcError::WebDriverNotReady)
+        }
     }
 }
 
