@@ -1,12 +1,12 @@
 [package]
 name = "wdc"
-version = "0.1.0-beta.4"
-authors = ["Michael Lee <imichael2e2@proton.me>"]
+version = "0.1.0-beta5"
+authors = ["Michael Lee <imichael2e2@proton.me OR imichael2e2@gmail.com>"]
 edition = "2021"
 description = "A WebDriver client library."
 repository = "http://github.com/imichael2e2/wdc"
 documentation = "https://docs.rs/wdc"
-license = "GPL-3.0-or-later"
+license = "MIT OR GPL-3.0-or-later"
 keywords = ["w3c", "webdriver", "client", "automation", "webdriver-bidi"]
 categories = ["web-programming", "network-programming"]
 exclude = ["*.bak"]
