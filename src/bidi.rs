@@ -1,18 +1,13 @@
-// Copyright (C) 2023  Michael Lee
+// Copyright (C) 2023 Michael Lee <imichael2e2@proton.me OR ...@gmail.com>
 //
-// This file is part of Wdc.
+// Licensed under the MIT License <LICENSE-MIT or
+// https://opensource.org/license/mit> or the GNU General Public License,
+// Version 3.0 or any later version <LICENSE-GPL or
+// https://www.gnu.org/licenses/gpl-3.0.txt>, at your option.
 //
-// Wdc is free software: you can redistribute it and/or modify it under the
-// terms of the GNU General Public License as published by the Free Software
-// Foundation, either version 3 of the License, or (at your option) any later
-// version.
+// This file may not be copied, modified, or distributed except except in
+// compliance with either of the licenses.
 //
-// Wdc is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along with
-// Wdc. If not, see <https://www.gnu.org/licenses/>.
 
 //!
 //! The module dedicated to WebDriver BiDi standard.
@@ -146,7 +141,7 @@ where
                 continue;
             }
             Err(_e) => {
-                crate::dbgg!(_e);
+                dbgg!(_e);
                 break;
             }
         }
@@ -164,13 +159,13 @@ where
                 continue;
             }
             Err(_e) => {
-                crate::dbgg!(_e);
+                dbgg!(_e);
                 break;
             }
         }
     }
 
-    crate::dbgg!(already_wait);
+    dbgg!(already_wait);
 
     if ready_or_not {
         Ok(wdc)
@@ -196,7 +191,7 @@ where
                     .unwrap();
                 let resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
 
-                crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+                dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
                 if resp.is_ok() {
                     match serde_json::from_slice::<DrvStatResult>(resp.msgbody()) {
@@ -245,7 +240,7 @@ where
         let resp = WebSocketMessage::from_stream(&mut stream).unwrap();
         let respdata = resp.get_message_data().unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(&respdata));
+        dbgg!(String::from_utf8_lossy(&respdata));
 
         #[derive(serde::Deserialize)]
         #[allow(unused)]
@@ -280,7 +275,7 @@ where
             r#"{{"id":123,"method":"browsingContext.navigate","params":{{"url":"{}","context":"{}"}}}}"#,
             url, ctx_id
         );
-        crate::dbgg!(&mb_string);
+        dbgg!(&mb_string);
         let mut wsmsg = WebSocketMessage::new();
         wsmsg.allow_small().allow_medium().allow_large();
         wsmsg
@@ -290,7 +285,7 @@ where
 
         let resp = WebSocketMessage::from_stream(&mut stream).unwrap();
         let respdata = resp.get_message_data().unwrap();
-        crate::dbgg!(String::from_utf8_lossy(&respdata));
+        dbgg!(String::from_utf8_lossy(&respdata));
 
         // check_fail_drvcmd(&respdata)?;
 
@@ -337,7 +332,7 @@ where
 
         let resp = WebSocketMessage::from_stream(&mut stream).unwrap();
         let respdata = resp.get_message_data().unwrap();
-        crate::dbgg!(String::from_utf8_lossy(&respdata));
+        dbgg!(String::from_utf8_lossy(&respdata));
 
         // check_fail_drvcmd(&respdata)?;
 
@@ -407,8 +402,8 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.headers()));
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.headers()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             Ok(())
@@ -441,7 +436,7 @@ where
         mb.extend(serde_json::to_vec(&requ).expect("ser"));
         mb.extend(r#"}"#.as_bytes());
 
-        crate::dbgg!(String::from_utf8_lossy(&mb));
+        dbgg!(String::from_utf8_lossy(&mb));
 
         req.http1p1()
             .post("/session")
@@ -453,12 +448,12 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             let deser_result;
 
-            crate::run_diag!("deser_resp", {
+            run_diag!("deser_resp", {
                 deser_result = serde_json::from_slice::<D::SessResult>(resp.msgbody())
             });
 
@@ -472,13 +467,13 @@ where
                     let raddr = cap.get(1).unwrap().as_str();
                     let newssid = cap.get(2).unwrap().as_str();
                     let ws_uri = format!("/session/{}", newssid);
-                    crate::dbgg!(raddr, newssid);
+                    dbgg!(raddr, newssid);
 
                     if let Ok(mut wsstream) = TcpStream::connect(&raddr) {
                         WebSocketHandshaker::try_as_client(&mut wsstream, &ws_uri, &raddr)
                             .expect("handshake");
                         self.ws_stream = Some(Arc::new(Mutex::new(wsstream)));
-                        crate::dbgmsg!("yes!");
+                        dbgmsg!("yes!");
                     }
 
                     Ok(())

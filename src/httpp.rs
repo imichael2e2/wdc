@@ -1,18 +1,13 @@
-// Copyright (C) 2023  Michael Lee
+// Copyright (C) 2023 Michael Lee <imichael2e2@proton.me OR ...@gmail.com>
 //
-// This file is part of Wdc.
+// Licensed under the MIT License <LICENSE-MIT or
+// https://opensource.org/license/mit> or the GNU General Public License,
+// Version 3.0 or any later version <LICENSE-GPL or
+// https://www.gnu.org/licenses/gpl-3.0.txt>, at your option.
 //
-// Wdc is free software: you can redistribute it and/or modify it under the
-// terms of the GNU General Public License as published by the Free Software
-// Foundation, either version 3 of the License, or (at your option) any later
-// version.
+// This file may not be copied, modified, or distributed except except in
+// compliance with either of the licenses.
 //
-// Wdc is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along with
-// Wdc. If not, see <https://www.gnu.org/licenses/>.
 
 use std::io::{Read, Write};
 use std::net::TcpStream;
@@ -503,7 +498,7 @@ impl HttpRequestParts {
     pub fn msgbody_from_slice(&mut self, b: &[u8]) -> &mut Self {
         self.msgbody.extend(b);
         let hdrline = format!("Content-Length: {}\r\n", b.len()).into_bytes();
-        crate::dbgg!(std::str::from_utf8(b).unwrap());
+        dbgg!(std::str::from_utf8(b).unwrap());
         self.headers.extend(hdrline);
         self
     }
@@ -526,7 +521,7 @@ impl HttpRequestParts {
 
     pub fn send_through(&self, stream: &mut TcpStream) -> Result<(), HttpError> {
         let wbuf = self.to_vec();
-        crate::dbgg!(wbuf.len());
+        dbgg!(wbuf.len());
         stream.write_all(&wbuf).unwrap();
 
         Ok(())
@@ -569,7 +564,7 @@ impl HttpRequestParts {
                     curi += 1;
                     break;
                 } else {
-                    crate::dbgg!(1233);
+                    dbgg!(1233);
                     return Err(HttpError::InvalidHttpData);
                 }
             } else {
@@ -591,7 +586,7 @@ impl HttpRequestParts {
         let mut mb_starti = 0usize;
         loop {
             if curi >= rbuf.len() {
-                crate::dbgg!(rbuf.len());
+                dbgg!(rbuf.len());
                 return Err(HttpError::InvalidHttpData);
             }
             stream.read_exact(&mut rbuf[curi..curi + 1]).unwrap(); // !
@@ -975,10 +970,10 @@ impl HttpResponseParts {
 
         // Status Line
 
-        // crate::dbgg!(stream.nodelay().unwrap());
+        // dbgg!(stream.nodelay().unwrap());
 
         // // http ident ver
-        // crate::run_diag!("http_ident", {
+        // run_diag!("http_ident", {
         //     (curi, nexi) = (0, 5);
         //     stream.read_exact(&mut rbuf[curi..nexi]).unwrap();
         //     if &rbuf[curi..nexi] != b"HTTP/" {
@@ -987,7 +982,7 @@ impl HttpResponseParts {
         // });
 
         // http ver
-        crate::run_diag!("http_ver", {
+        run_diag!("http_ver", {
             stream.read_exact(&mut rbuf[0..9]).unwrap(); // rfc2616-6.1, mandated SP
             match &rbuf[0..9] {
                 b"HTTP/0.9 " | b"HTTP/1.0 " | b"HTTP/1.1 " | b"HTTP/2.0 " | b"HTTP/3.0 " => {
@@ -1000,7 +995,7 @@ impl HttpResponseParts {
         });
 
         // status code
-        // crate::run_diag!("status_code", {
+        // run_diag!("status_code", {
         stream.read_exact(&mut rbuf[0..4]).unwrap(); // rfc2616-6.1, mandated SP
 
         // FIXME: skip verify content?
@@ -1015,7 +1010,7 @@ impl HttpResponseParts {
         //     b"400 " => b"400",
         //     b"500 " => b"500",
         //     unknown => {
-        //         crate::dbgmsg!("unknown status code: {}", unknown);
+        //         dbgmsg!("unknown status code: {}", unknown);
         //         unknown
         //     }
         // });
@@ -1031,7 +1026,7 @@ impl HttpResponseParts {
         // reason phase and crlf
         // let _reason_phase_begi = nexi;
         // let mut _reason_phase_endi = 0;
-        // crate::run_diag!("rea_phase", {
+        // run_diag!("rea_phase", {
         let mut curi = 0usize;
         let reason_endi;
         loop {
@@ -1043,7 +1038,7 @@ impl HttpResponseParts {
                     reason_endi = curi - 1; // rfc2616-6.1, mandated SPC
                     break;
                 } else {
-                    crate::dbgg!(&rbuf[curi..curi + 1], &template);
+                    dbgg!(&rbuf[curi..curi + 1], &template);
                     return Err(HttpError::InvalidHttpData);
                 }
             } else {
@@ -1054,11 +1049,11 @@ impl HttpResponseParts {
         template.status.extend(&rbuf[0..reason_endi]);
         // });
 
-        // crate::dbgg!(_reason_phase_begi, _reason_phase_endi);
+        // dbgg!(_reason_phase_begi, _reason_phase_endi);
 
         // let _header_begi = nexi;
         // let mut _header_endi = 0;
-        // crate::run_diag!("headers", {
+        // run_diag!("headers", {
         let mut curi = 0usize;
         let headers_endi; // excluded
         loop {
@@ -1078,38 +1073,22 @@ impl HttpResponseParts {
             }
         }
         template.headers.extend(&rbuf[0..headers_endi]);
-        // });
 
-        // headers
-        // crate::dbgg!(_header_begi, _header_endi);
-        // template.headers.extend(&rbuf[_header_begi.._header_endi]);
-
-        // fixme: `rbuf` is useless from this line on
-
-        // crate::dbgg!(std::str::from_utf8(&template.headers));
-
-        // crate::run_diag!("ctn_type", {
+        // run_diag!("ctn_type", {
         //     match get_content_type(&template.headers) {
         //         Ok(_content_type) => {
         //             // fixme: use enum to save things
-        //             crate::dbgg!(_content_type);
+        //             dbgg!(_content_type);
         //         }
         //         Err(_err) => {
-        //             crate::dbgg!(_err);
+        //             dbgg!(_err);
         //         }
         //     }
         // });
 
-        // message body // FIXME:this should be a seperate function,
-        // f(stream,offset,path), the path is currently useless for previous header
-        // parsing.
-
-        // this one depends on content-type presence
-        // crate::run_diag!("msgbody", {
-        // match get_content_length(&template.headers) {
         match template.get_content_length() {
             Ok(msgbody_len) => {
-                crate::dbgg!(msgbody_len);
+                dbgg!(msgbody_len);
                 if pbody_path.is_none() {
                     // a trivial-size body
                     let msgbody_begi = 0;
@@ -1161,23 +1140,23 @@ impl HttpResponseParts {
                         if nleft == 0 {
                             break;
                         }
-                        crate::dbgg!(nleft);
+                        dbgg!(nleft);
                         match stream.read(&mut read_buf) {
                             Ok(nread) => {
-                                crate::dbgg!(nread);
+                                dbgg!(nread);
                                 if nread > 0 {
                                     {
                                         _n_sys_socket_read += 1;
                                     }
 
-                                    // crate::dbgg!(nleft, nread, insig_head_tmp);
+                                    // dbgg!(nleft, nread, insig_head_tmp);
                                     if nleft < nread {
                                         return Err(HttpError::InvalidContentLength);
                                     }
                                     nleft -= nread;
 
                                     if insig_head_tmp > nread {
-                                        // crate::dbgg!("skip persist write", insig_head_tmp,
+                                        // dbgg!("skip persist write", insig_head_tmp,
                                         // nread);
                                         insig_head_tmp -= nread;
                                         continue;
@@ -1185,7 +1164,7 @@ impl HttpResponseParts {
                                     if let Err(_e) =
                                         pbody_file.write_all(&read_buf[insig_head_tmp..nread])
                                     {
-                                        crate::dbgg!(_e);
+                                        dbgg!(_e);
                                         return Err(HttpError::PersistBodyWrite);
                                     }
                                     insig_head_tmp = 0;
@@ -1195,34 +1174,34 @@ impl HttpResponseParts {
                                 } else {
                                     // ==0 maybe remote close conn correctly, fixme to handle
                                     // this
-                                    crate::dbgg!("mabybe remote close conn");
+                                    dbgg!("mabybe remote close conn");
                                     break;
                                 }
                             }
                             Err(_e) => {
-                                crate::dbgg!("stream read failed", _e);
+                                dbgg!("stream read failed", _e);
                                 break;
                             }
                         }
                     } // loop
 
                     if nleft == 0 {
-                        crate::dbgg!("all data read done", _n_sys_socket_read, _n_sys_disk_write);
+                        dbgg!("all data read done", _n_sys_socket_read, _n_sys_disk_write);
                         template.msgbody_persist = Some(pbody_path.to_string());
                         // start to truncate from file tail
                         let final_fsize = msgbody_len - insig_head - insig_tail;
-                        crate::dbgg!(msgbody_len, insig_head_tmp, final_fsize);
+                        dbgg!(msgbody_len, insig_head_tmp, final_fsize);
                         pbody_file
                             .set_len(final_fsize as u64)
                             .expect("failed to truncate file");
                     } else {
-                        crate::dbgg!(nleft);
+                        dbgg!(nleft);
                         return Err(HttpError::IncompleteFinish);
                     }
                 }
             }
             Err(_err) => {
-                crate::dbgg!(_err);
+                dbgg!(_err);
             }
         }
         // });
@@ -1364,7 +1343,7 @@ mod utst {
 						{ capalibities: { } }";
                 let mut rbuf = vec![0u8; expected_comming_request.len()];
                 stream.read_exact(&mut rbuf).unwrap();
-                // crate::dbgg!(&rbuf);
+                // dbgg!(&rbuf);
                 assert_eq!(
                     &std::str::from_utf8(&rbuf).unwrap(),
                     &expected_comming_request
@@ -1520,20 +1499,20 @@ mod utst {
                         }
                     }
                     Err(_e) => {
-                        crate::dbgg!(_e);
+                        dbgg!(_e);
                         break;
                     }
                 }
             }
 
-            crate::dbgg!(tread);
+            dbgg!(tread);
 
             let conn = listener
                 .incoming()
                 .next()
                 .expect("fail to get incoming connection");
 
-            crate::dbgg!("a conn!!!");
+            dbgg!("a conn!!!");
 
             match conn {
                 Ok(mut stream) => {
@@ -1676,20 +1655,20 @@ mod utst {
                         }
                     }
                     Err(_e) => {
-                        crate::dbgg!(_e);
+                        dbgg!(_e);
                         break;
                     }
                 }
             }
 
-            crate::dbgg!(tread);
+            dbgg!(tread);
 
             let conn = listener
                 .incoming()
                 .next()
                 .expect("fail to get incoming connection");
 
-            crate::dbgg!("a conn!!!");
+            dbgg!("a conn!!!");
 
             match conn {
                 Ok(mut stream) => {
@@ -1836,20 +1815,20 @@ mod utst {
                         }
                     }
                     Err(_e) => {
-                        crate::dbgg!(_e);
+                        dbgg!(_e);
                         break;
                     }
                 }
             }
 
-            crate::dbgg!(tread);
+            dbgg!(tread);
 
             let conn = listener
                 .incoming()
                 .next()
                 .expect("fail to get incoming connection");
 
-            crate::dbgg!("a conn!!!");
+            dbgg!("a conn!!!");
 
             match conn {
                 Ok(mut stream) => {

@@ -1,18 +1,13 @@
-// Copyright (C) 2023  Michael Lee
+// Copyright (C) 2023 Michael Lee <imichael2e2@proton.me OR ...@gmail.com>
 //
-// This file is part of Wdc.
+// Licensed under the MIT License <LICENSE-MIT or
+// https://opensource.org/license/mit> or the GNU General Public License,
+// Version 3.0 or any later version <LICENSE-GPL or
+// https://www.gnu.org/licenses/gpl-3.0.txt>, at your option.
 //
-// Wdc is free software: you can redistribute it and/or modify it under the
-// terms of the GNU General Public License as published by the Free Software
-// Foundation, either version 3 of the License, or (at your option) any later
-// version.
+// This file may not be copied, modified, or distributed except except in
+// compliance with either of the licenses.
 //
-// Wdc is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along with
-// Wdc. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::httpp::HttpRequestParts;
 use crate::httpp::HttpResponseParts;
@@ -63,12 +58,12 @@ impl WebSocketHandshaker {
                 if !(status_reason == b"101 Switching Protocols"
                     || status_reason == b"101 WebSocket Protocol Handshake")
                 {
-                    crate::dbgg!(String::from_utf8_lossy(status_reason));
+                    dbgg!(String::from_utf8_lossy(status_reason));
                     return Err(WspError::HandshakeFail1);
                 }
             }
             Err(_e) => {
-                crate::dbgg!(_e);
+                dbgg!(_e);
                 return Err(WspError::HandshakeFail2);
             }
         }
@@ -76,12 +71,12 @@ impl WebSocketHandshaker {
         match resp.get_ws_accept() {
             Ok(acc) => {
                 if acc != b"GsCYk86TcY3D9uBDLZuG5FmeV3Y=" {
-                    crate::dbgg!(String::from_utf8_lossy(acc));
+                    dbgg!(String::from_utf8_lossy(acc));
                     return Err(WspError::HandshakeFail1);
                 }
             }
             Err(_e) => {
-                crate::dbgg!(_e);
+                dbgg!(_e);
                 return Err(WspError::HandshakeFail2);
             }
         }
@@ -230,7 +225,7 @@ impl WebSocketMessage {
             };
 
             let mut f = WebSocketFrame::with_size_kinds(self.size_kinds, actual_flen)?;
-            // dbg!(&f);
+            // dbgg!(&f);
 
             curf_starti = nexf_starti;
             nexf_starti += actual_flen;
@@ -289,7 +284,7 @@ impl WebSocketMessage {
             let is_mask = (plen_s & 0b1000_0000) == 0b1000_0000;
             let plen_hint = plen_s & 0b0111_1111;
 
-            dbg!(is_fin, is_mask, plen_hint);
+            dbgg!(is_fin, is_mask, plen_hint);
 
             let plen: usize = if plen_hint < 126 {
                 newframe.size_kind = SizeKind::S; // !
@@ -308,7 +303,7 @@ impl WebSocketMessage {
                 panic!("corrupt frame")
             };
 
-            dbg!(plen);
+            dbgg!(plen);
             newframe.plen = plen as u64; // !
 
             let mut mask_key = 0u32;
@@ -334,7 +329,7 @@ impl WebSocketMessage {
                 }
             }
 
-            // dbg!(String::from_utf8_lossy(&pl_data));
+            // dbgg!(String::from_utf8_lossy(&pl_data));
 
             newframe.payload.extend(&pl_data); // !
 
@@ -856,7 +851,7 @@ mod utst {
         wsmsg
             .set_message_data(&bin_buf, vec![])
             .expect("set payload data");
-        dbg!(&wsmsg);
+        dbgg!(&wsmsg);
         assert_eq!(wsmsg.frames.len(), 3);
     }
 
@@ -874,7 +869,7 @@ mod utst {
         wsmsg
             .set_message_data(&bin_buf, vec![])
             .expect("set payload data");
-        dbg!(&wsmsg);
+        dbgg!(&wsmsg);
         assert_eq!(wsmsg.frames.len(), 1);
     }
 
@@ -892,7 +887,7 @@ mod utst {
         wsmsg
             .set_message_data(&bin_buf, vec![WspSett::MaxFrameLen(256)])
             .expect("set payload data");
-        dbg!(&wsmsg);
+        dbgg!(&wsmsg);
         assert_eq!(wsmsg.frames.len(), 1);
     }
 
@@ -910,7 +905,7 @@ mod utst {
         wsmsg
             .set_message_data(&bin_buf, vec![WspSett::MaxFrameLen(128)])
             .expect("set payload data");
-        dbg!(&wsmsg);
+        dbgg!(&wsmsg);
         assert_eq!(wsmsg.frames.len(), 2);
     }
 
@@ -927,7 +922,7 @@ mod utst {
         wsmsg
             .set_message_data(&bin_buf, vec![])
             .expect("set payload data");
-        dbg!(&wsmsg);
+        dbgg!(&wsmsg);
         assert_eq!(wsmsg.frames.len(), 1);
     }
 
@@ -945,7 +940,7 @@ mod utst {
         wsmsg
             .set_message_data(&bin_buf, vec![])
             .expect("set payload data");
-        dbg!(&wsmsg);
+        dbgg!(&wsmsg);
         assert_eq!(wsmsg.frames.len(), 2); // 65536/65535
     }
 
@@ -964,7 +959,7 @@ mod utst {
         wsmsg
             .set_message_data(&bin_buf, vec![])
             .expect("set payload data");
-        dbg!(&wsmsg);
+        dbgg!(&wsmsg);
         assert_eq!(wsmsg.frames.len(), 525); // 65536/125
     }
 
@@ -983,7 +978,7 @@ mod utst {
         wsmsg
             .set_message_data(&bin_buf, vec![WspSett::MaxFrameLen(100)])
             .expect("set payload data");
-        dbg!(&wsmsg);
+        dbgg!(&wsmsg);
         assert_eq!(wsmsg.frames.len(), 656); // 65536/100
     }
 
@@ -1011,7 +1006,7 @@ mod utst {
                         stream.write_all(&msg).unwrap();
                     }
                     Err(e) => {
-                        dbg!(e);
+                        dbgg!(e);
                     }
                 }
             }
@@ -1027,7 +1022,7 @@ mod utst {
                 assert_eq!(wsmsg.frames[0].payload, b"Hello");
             }
             Err(e) => {
-                dbg!(e);
+                dbgg!(e);
             }
         }
     }
@@ -1049,7 +1044,7 @@ mod utst {
                         stream.write_all(&msg).unwrap();
                     }
                     Err(e) => {
-                        dbg!(e);
+                        dbgg!(e);
                     }
                 }
             }
@@ -1065,7 +1060,7 @@ mod utst {
                 assert_eq!(wsmsg.frames[0].payload, b"Hello");
             }
             Err(e) => {
-                dbg!(e);
+                dbgg!(e);
             }
         }
     }
@@ -1085,7 +1080,7 @@ mod utst {
                         stream.write_all(&msg).unwrap();
                     }
                     Err(e) => {
-                        dbg!(e);
+                        dbgg!(e);
                     }
                 }
             }
@@ -1102,7 +1097,7 @@ mod utst {
                 assert_eq!(wsmsg.frames[1].payload, b"lo");
             }
             Err(e) => {
-                dbg!(e);
+                dbgg!(e);
             }
         }
     }
@@ -1123,7 +1118,7 @@ mod utst {
                         stream.write_all(&msg).unwrap();
                     }
                     Err(e) => {
-                        dbg!(e);
+                        dbgg!(e);
                     }
                 }
             }
@@ -1140,7 +1135,7 @@ mod utst {
                 assert_eq!(wsmsg.frames[0].payload, vec![0xce; 256]);
             }
             Err(e) => {
-                dbg!(e);
+                dbgg!(e);
             }
         }
     }
@@ -1162,7 +1157,7 @@ mod utst {
                         stream.write_all(&msg).unwrap();
                     }
                     Err(e) => {
-                        dbg!(e);
+                        dbgg!(e);
                     }
                 }
             }
@@ -1179,7 +1174,7 @@ mod utst {
                 assert_eq!(wsmsg.frames[0].payload, vec![0xce; 65536]);
             }
             Err(e) => {
-                dbg!(e);
+                dbgg!(e);
             }
         }
     }
@@ -1203,7 +1198,7 @@ mod utst {
                         stream.write_all(&msg.to_vec()).unwrap();
                     }
                     Err(e) => {
-                        dbg!(e);
+                        dbgg!(e);
                     }
                 }
             }
@@ -1225,7 +1220,7 @@ mod utst {
                 assert_eq!(wsmsg.frames[524].plen, 36);
             }
             Err(e) => {
-                dbg!(e);
+                dbgg!(e);
             }
         }
     }
@@ -1260,17 +1255,17 @@ mod utst {
 
                             resp.send_through(&mut stream).unwrap();
                         } else {
-                            dbg!(String::from_utf8_lossy(req.get_req_uri().unwrap()));
-                            dbg!(String::from_utf8_lossy(req.get_connection().unwrap()));
-                            dbg!(String::from_utf8_lossy(req.get_upgrade().unwrap()));
-                            dbg!(String::from_utf8_lossy(req.get_host().unwrap()));
-                            dbg!(String::from_utf8_lossy(req.get_ws_key().unwrap()));
-                            dbg!(String::from_utf8_lossy(req.get_ws_ver().unwrap()));
-                            dbg!(&req);
+                            dbgg!(String::from_utf8_lossy(req.get_req_uri().unwrap()));
+                            dbgg!(String::from_utf8_lossy(req.get_connection().unwrap()));
+                            dbgg!(String::from_utf8_lossy(req.get_upgrade().unwrap()));
+                            dbgg!(String::from_utf8_lossy(req.get_host().unwrap()));
+                            dbgg!(String::from_utf8_lossy(req.get_ws_key().unwrap()));
+                            dbgg!(String::from_utf8_lossy(req.get_ws_ver().unwrap()));
+                            dbgg!(&req);
                         }
                     }
                     Err(_e) => {
-                        dbg!(_e);
+                        dbgg!(_e);
                     }
                 }
             }
@@ -1286,7 +1281,7 @@ mod utst {
                     .expect("handshake");
             }
             Err(e) => {
-                dbg!(e);
+                dbgg!(e);
             }
         }
     }

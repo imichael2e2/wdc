@@ -1,18 +1,13 @@
-// Copyright (C) 2023  Michael Lee
+// Copyright (C) 2023 Michael Lee <imichael2e2@proton.me OR ...@gmail.com>
 //
-// This file is part of Wdc.
+// Licensed under the MIT License <LICENSE-MIT or
+// https://opensource.org/license/mit> or the GNU General Public License,
+// Version 3.0 or any later version <LICENSE-GPL or
+// https://www.gnu.org/licenses/gpl-3.0.txt>, at your option.
 //
-// Wdc is free software: you can redistribute it and/or modify it under the
-// terms of the GNU General Public License as published by the Free Software
-// Foundation, either version 3 of the License, or (at your option) any later
-// version.
+// This file may not be copied, modified, or distributed except except in
+// compliance with either of the licenses.
 //
-// Wdc is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along with
-// Wdc. If not, see <https://www.gnu.org/licenses/>.
 
 use std::borrow::Cow;
 
@@ -138,7 +133,7 @@ mod deser {
                             // skip unknown fields, rather than error
                             use serde::de::IgnoredAny;
                             map.next_value::<IgnoredAny>()?; // advance 1 token
-                            crate::dbgmsg!("SKIP...key {:?} and its value", key);
+                            dbgmsg!("SKIP...key {:?} and its value", key);
                         }
                     }
                 }
@@ -281,7 +276,7 @@ mod deser {
                             // skip unknown fields, rather than error
                             use serde::de::IgnoredAny;
                             map.next_value::<IgnoredAny>()?; // advance 1 token
-                            crate::dbgmsg!("SKIP...key {:?} and its value", key);
+                            dbgmsg!("SKIP...key {:?} and its value", key);
                         }
                     }
                 }

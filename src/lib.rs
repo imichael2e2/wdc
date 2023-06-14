@@ -1,18 +1,13 @@
-// Copyright (C) 2023  Michael Lee
+// Copyright (C) 2023 Michael Lee <imichael2e2@proton.me OR ...@gmail.com>
 //
-// This file is part of Wdc.
+// Licensed under the MIT License <LICENSE-MIT or
+// https://opensource.org/license/mit> or the GNU General Public License,
+// Version 3.0 or any later version <LICENSE-GPL or
+// https://www.gnu.org/licenses/gpl-3.0.txt>, at your option.
 //
-// Wdc is free software: you can redistribute it and/or modify it under the
-// terms of the GNU General Public License as published by the Free Software
-// Foundation, either version 3 of the License, or (at your option) any later
-// version.
+// This file may not be copied, modified, or distributed except except in
+// compliance with either of the licenses.
 //
-// Wdc is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along with
-// Wdc. If not, see <https://www.gnu.org/licenses/>.
 
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
 // #![feature(doc_auto_cfg)]
@@ -84,6 +79,10 @@
 //!    Ok(())
 //! }
 //! ```
+
+#[macro_use]
+mod private_dbg;
+
 #[cfg(feature = "bidi")]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "bidi")))]
 #[allow(clippy::all)]
@@ -98,54 +97,6 @@ mod httpp;
 #[cfg(feature = "bidi")]
 #[allow(clippy::len_zero, clippy::identity_op, clippy::needless_range_loop)]
 mod wsp;
-
-/// steal from dbg!
-macro_rules! dbgg {
-    () => {
-        #[cfg(feature = "devel")]
-        dbg!();
-    };
-    ($val:expr $(,)?) => {
-        #[cfg(feature = "devel")]
-        dbg!($val);
-    };
-    ($($val:expr),+ $(,)?) => {
-        #[cfg(feature = "devel")]
-        ($(dbg!($val)),+);
-    };
-}
-macro_rules! dbgmsg {
-    ($fmtstr:expr) => {
-        #[cfg(feature = "devel")]
-        let dbgmsg = format!($fmtstr);
-        #[cfg(feature = "devel")]
-        dbg!(dbgmsg);
-    };
-    ($fmtstr:expr, $($val:expr),+ $(,)?) => {
-        #[cfg(feature = "devel")]
-        let dbgmsg = format!($fmtstr, $($val),+);
-        #[cfg(feature = "devel")]
-        dbg!(dbgmsg);
-    };
-}
-macro_rules! run_diag {
-    ($phase:expr, $blk:block) => {
-        #[cfg(feature = "diag")]
-        let start = std::time::Instant::now();
-
-        $blk;
-
-        #[cfg(feature = "diag")]
-        let dura = start.elapsed();
-        #[cfg(feature = "diag")]
-        let diag_msg = format!("{}: {:?}", $phase, dura);
-        #[cfg(feature = "diag")]
-        dbg!(diag_msg);
-    };
-}
-pub(crate) use dbgg;
-pub(crate) use dbgmsg;
-pub(crate) use run_diag;
 
 // STRUCT //
 

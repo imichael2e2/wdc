@@ -1,18 +1,13 @@
-// Copyright (C) 2023  Michael Lee
+// Copyright (C) 2023 Michael Lee <imichael2e2@proton.me OR ...@gmail.com>
 //
-// This file is part of Wdc.
+// Licensed under the MIT License <LICENSE-MIT or
+// https://opensource.org/license/mit> or the GNU General Public License,
+// Version 3.0 or any later version <LICENSE-GPL or
+// https://www.gnu.org/licenses/gpl-3.0.txt>, at your option.
 //
-// Wdc is free software: you can redistribute it and/or modify it under the
-// terms of the GNU General Public License as published by the Free Software
-// Foundation, either version 3 of the License, or (at your option) any later
-// version.
+// This file may not be copied, modified, or distributed except except in
+// compliance with either of the licenses.
 //
-// Wdc is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along with
-// Wdc. If not, see <https://www.gnu.org/licenses/>.
 
 use std::net::TcpStream;
 use std::str;
@@ -52,7 +47,7 @@ pub(crate) fn check_fail_drvcmd(s: &[u8]) -> Result<(), WdcError> {
             }
         }
         Err(_e) => {
-            crate::dbgg!(_e);
+            dbgg!(_e);
             Err(WdcError::Buggy)
         }
     }
@@ -164,7 +159,7 @@ where
                     .unwrap();
                 let resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
 
-                crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+                dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
                 if resp.is_ok() {
                     match serde_json::from_slice::<DrvStatResult>(resp.msgbody()) {
@@ -219,7 +214,7 @@ where
             resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
         });
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             Ok(self)
@@ -249,7 +244,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 10, 2).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             Ok(resp.msgbody)
@@ -288,7 +283,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 49, 3).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             Ok(resp.msgbody)
@@ -327,7 +322,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             match serde_json::from_slice::<FindElemsResult>(resp.msgbody()) {
@@ -367,7 +362,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             // actually value:null needs to be checked, but not necessary
@@ -398,7 +393,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, Some(save_path), 10, 2).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             if resp.msgbody_persist().is_some() {
@@ -431,12 +426,11 @@ where
             .send_through(&mut stream)
             .unwrap();
 
-        crate::dbgg!(1111111111);
-        crate::dbgg!(&req);
+        dbgg!(&req);
 
         let resp = HttpResponseParts::from_stream(&mut stream, Some(save_path), 10, 2).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             if resp.msgbody_persist().is_some() {
@@ -445,7 +439,7 @@ where
                 Err(WdcError::Buggy)
             }
         } else {
-            crate::dbgg!(&resp);
+            dbgg!(&resp);
             check_fail_drvcmd(resp.msgbody())?;
             Err(WdcError::Buggy) // unreachable
         }
@@ -469,7 +463,7 @@ where
         mb.extend(r#","orientation":"portrait""#.as_bytes());
         mb.extend(r#"}"#.as_bytes());
 
-        crate::dbgg!(std::str::from_utf8(&mb).unwrap());
+        dbgg!(std::str::from_utf8(&mb).unwrap());
 
         req.http1p1()
             .post(&format!("/session/{}/print", ssid))
@@ -480,7 +474,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, Some(save_path), 10, 2).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             if resp.msgbody_persist().is_some() {
@@ -514,7 +508,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, save_path, 10, 2).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             if resp.msgbody_persist().is_some() {
@@ -570,7 +564,7 @@ where
             resp = HttpResponseParts::from_stream(&mut stream, None, 9, 1).unwrap();
         });
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             Ok(resp.msgbody)
@@ -614,7 +608,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 9, 1).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             Ok(resp.msgbody)
@@ -649,7 +643,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 9, 1).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             Ok(())
@@ -705,7 +699,7 @@ where
         mb.extend(serde_json::to_vec(&requ).expect("ser"));
         mb.extend(r#"}"#.as_bytes());
 
-        crate::dbgg!(String::from_utf8_lossy(&mb));
+        dbgg!(String::from_utf8_lossy(&mb));
 
         req.http1p1()
             .post("/session")
@@ -717,7 +711,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             let deser_result;
@@ -732,7 +726,7 @@ where
                     Ok(())
                 }
                 Err(_e) => {
-                    crate::dbgg!(_e);
+                    dbgg!(_e);
                     Err(WdcError::Buggy)
                 }
             }
@@ -765,7 +759,7 @@ where
         mb.extend(serde_json::to_vec(&requ).expect("ser"));
         mb.extend(r#"}"#.as_bytes());
 
-        crate::dbgg!(String::from_utf8_lossy(&mb));
+        dbgg!(String::from_utf8_lossy(&mb));
 
         req.http1p1()
             .post("/session")
@@ -777,7 +771,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             let deser_result;
@@ -830,7 +824,7 @@ where
         mb.extend(serde_json::to_vec(&requ).expect("ser"));
         mb.extend(r#"}"#.as_bytes());
 
-        crate::dbgg!(String::from_utf8_lossy(&mb));
+        dbgg!(String::from_utf8_lossy(&mb));
 
         req.http1p1()
             .post("/session")
@@ -842,7 +836,7 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             let deser_result;
@@ -880,8 +874,8 @@ where
 
         let resp = HttpResponseParts::from_stream(&mut stream, None, 0, 0).unwrap();
 
-        crate::dbgg!(String::from_utf8_lossy(resp.headers()));
-        crate::dbgg!(String::from_utf8_lossy(resp.msgbody()));
+        dbgg!(String::from_utf8_lossy(resp.headers()));
+        dbgg!(String::from_utf8_lossy(resp.msgbody()));
 
         if resp.is_ok() {
             Ok(())
@@ -926,7 +920,7 @@ where
                 continue;
             }
             Err(_e) => {
-                crate::dbgg!(_e);
+                dbgg!(_e);
                 break;
             }
         }
@@ -944,13 +938,13 @@ where
                 continue;
             }
             Err(_e) => {
-                crate::dbgg!(_e);
+                dbgg!(_e);
                 break;
             }
         }
     }
 
-    crate::dbgg!(already_wait);
+    dbgg!(already_wait);
 
     if ready_or_not {
         Ok(wdc)
@@ -994,7 +988,7 @@ where
                 continue;
             }
             Err(_e) => {
-                crate::dbgg!(_e);
+                dbgg!(_e);
                 break;
             }
         }
@@ -1012,13 +1006,13 @@ where
                 continue;
             }
             Err(_e) => {
-                crate::dbgg!(_e);
+                dbgg!(_e);
                 break;
             }
         }
     }
 
-    crate::dbgg!(already_wait);
+    dbgg!(already_wait);
 
     if ready_or_not {
         Ok(wdc)
