@@ -42,5 +42,5 @@ pub use chr::any::{ChromCapRequSetter, ChromiumCapaGetter, ChromiumCapaSetter};
 #[cfg_attr(doc_cfg, doc(cfg(feature = "chromium")))]
 pub use chr::{ChromCapRequ, ChromSessResult, ChromiumCapa};
 
-#[cfg(feature = "devel")]
+#[cfg(feature = "dev")]
 pub use comm::{CommCapRequ, CommCapa, CommSessResult};
