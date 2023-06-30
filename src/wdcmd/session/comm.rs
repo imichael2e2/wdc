@@ -46,6 +46,7 @@ where
     A: Default,
     L: Default,
 {
+    // optional indicates significance, which only used by serialization process
     pub(crate) browser_name: Option<Cow<'capa, str>>,
     pub(crate) browser_version: Option<Cow<'capa, str>>,
     pub(crate) platform_name: Option<Cow<'capa, str>>,

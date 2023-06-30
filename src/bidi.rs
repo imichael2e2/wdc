@@ -369,8 +369,21 @@ where
 
     // private
 
-    pub(crate) fn add_ssmeta(&mut self, ssid: String, profile: Option<String>) {
-        self.ssmetas.push(SessionMeta { ssid, profile });
+    pub(crate) fn add_ssmeta(
+        &mut self,
+        ssid: String,
+        browser_name: Option<String>,
+        browser_version: Option<String>,
+        platform_name: Option<String>,
+        browser_profile: Option<String>,
+    ) {
+        self.ssmetas.push(SessionMeta {
+            ssid,
+            browser_name,
+            browser_version,
+            platform_name,
+            browser_profile,
+        });
     }
 
     fn raddr(&self) -> String {
@@ -465,7 +478,7 @@ where
 
             match deser_result {
                 Ok(sess) => {
-                    self.add_ssmeta(sess.session_id().to_string(), None);
+                    self.add_ssmeta(sess.session_id().to_string(), None, None, None, None);
 
                     // FIXME: maybe RE is overkill?
                     let re = regex::Regex::new(r"ws://(.*)/session/(.*)").unwrap();

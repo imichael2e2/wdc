@@ -434,8 +434,39 @@ where
 pub type GeckoSessResult<'c> = comm::CommSessResult<FirefoxCapa<'c>>;
 
 impl GeckoSessResult<'_> {
-    pub fn profile(&self) -> Option<&str> {
-        self.value.capabilities.ext.profile.as_deref()
+    #[inline]
+    pub fn browser_name(&self) -> &str {
+        &self
+            .value
+            .capabilities
+            .browser_name
+            .as_ref()
+            .expect("buggy")
+    }
+
+    #[inline]
+    pub fn browser_version(&self) -> &str {
+        &self
+            .value
+            .capabilities
+            .browser_version
+            .as_ref()
+            .expect("buggy")
+    }
+
+    #[inline]
+    pub fn platform_name(&self) -> &str {
+        &self
+            .value
+            .capabilities
+            .platform_name
+            .as_ref()
+            .expect("buggy")
+    }
+
+    #[inline]
+    pub fn profile(&self) -> &str {
+        self.value.capabilities.ext.profile.as_ref().expect("buggy")
     }
 }
 

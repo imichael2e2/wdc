@@ -94,10 +94,56 @@ where
     type SessResult: Deserialize<'de> + W3cSessResultGetter;
 }
 
+///
+/// The metadata that a WebDriver session has.
 #[derive(Debug)]
-pub(crate) struct SessionMeta {
+pub struct SessionMeta {
     pub(crate) ssid: String,
-    pub(crate) profile: Option<String>,
+    pub(crate) browser_name: Option<String>,
+    pub(crate) browser_version: Option<String>,
+    pub(crate) platform_name: Option<String>,
+    pub(crate) browser_profile: Option<String>,
+}
+
+impl SessionMeta {
+    ///
+    /// WebDriver session's id
+    #[inline]
+    pub fn session_id(&self) -> &str {
+        &self.ssid
+    }
+
+    ///
+    /// The name of the underlying web browser. For example,
+    /// `firefox` or `chrome`
+    #[inline]
+    pub fn browser_name(&self) -> Option<&str> {
+        self.browser_name.as_ref().map(|x| x.as_str())
+    }
+
+    ///
+    /// The version of the underlying web browser. For example,
+    /// `102.9` or `112.0.5615.49`
+    #[inline]
+    pub fn browser_version(&self) -> Option<&str> {
+        self.browser_version.as_ref().map(|x| x.as_str())
+    }
+
+    ///
+    /// The platform on which the underlying web browser runs.
+    /// For example, `linux` or `windows`
+    #[inline]
+    pub fn platform_name(&self) -> Option<&str> {
+        self.platform_name.as_ref().map(|x| x.as_str())
+    }
+
+    ///
+    /// The profile directory of the underlying web browser.
+    /// For example, `/path/to/browser_data`
+    #[inline]
+    pub fn browser_profile(&self) -> Option<&str> {
+        self.browser_profile.as_ref().map(|x| x.as_str())
+    }
 }
 
 // WebDrvClient //
@@ -660,23 +706,33 @@ where
         }
     }
 
-    pub fn last_session_meta(&self) -> Result<(&str, Option<&str>), WdcError> {
+    pub fn last_session_meta(&self) -> Result<&SessionMeta, WdcError> {
         if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
 
         let lelem = self.ssmetas.last().expect("buggy");
 
-        Ok((
-            lelem.ssid.as_str(),
-            lelem.profile.as_ref().map(|v| v.as_str()),
-        ))
+        Ok(lelem)
     }
 
     // private //
 
-    pub(crate) fn add_ssmeta(&mut self, ssid: String, profile: Option<String>) {
-        self.ssmetas.push(SessionMeta { ssid, profile });
+    pub(crate) fn add_ssmeta(
+        &mut self,
+        ssid: String,
+        browser_name: Option<String>,
+        browser_version: Option<String>,
+        platform_name: Option<String>,
+        browser_profile: Option<String>,
+    ) {
+        self.ssmetas.push(SessionMeta {
+            ssid,
+            browser_name,
+            browser_version,
+            platform_name,
+            browser_profile,
+        });
     }
 
     pub(crate) fn raddr(&self) -> String {
@@ -743,7 +799,7 @@ where
             match deser_result {
                 Ok(sess) => {
                     // self.add_ssid(sess.session_id().to_string());
-                    self.add_ssmeta(sess.session_id().to_string(), None);
+                    self.add_ssmeta(sess.session_id().to_string(), None, None, None, None);
                     Ok(())
                 }
                 Err(_e) => {
@@ -803,7 +859,7 @@ where
 
             match deser_result {
                 Ok(sess) => {
-                    self.add_ssmeta(sess.session_id().to_string(), None);
+                    self.add_ssmeta(sess.session_id().to_string(), None, None, None, None);
                     Ok(())
                 }
                 _ => Err(WdcError::Buggy),
@@ -868,7 +924,7 @@ where
 
             match deser_result {
                 Ok(sess) => {
-                    self.add_ssmeta(sess.session_id().to_string(), None);
+                    self.add_ssmeta(sess.session_id().to_string(), None, None, None, None);
                     Ok(())
                 }
                 _ => Err(WdcError::Buggy),

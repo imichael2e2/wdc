@@ -327,7 +327,10 @@ mod webdrv_cmds {
                 let ssmeta = wdc.last_session_meta().expect("buggy");
 
                 dbg!(&ssmeta);
-                assert!(ssmeta.1.is_some());
+                assert!(ssmeta.browser_name().is_some());
+                assert!(ssmeta.browser_version().is_some());
+                assert!(ssmeta.platform_name().is_some());
+                assert!(ssmeta.browser_profile().is_some());
             }
         }
     }
@@ -675,7 +678,10 @@ mod webdrv_cmds {
                 let ssmeta = wdc.last_session_meta().expect("buggy");
 
                 dbg!(&ssmeta);
-                assert!(ssmeta.1.is_none());
+                assert!(ssmeta.browser_name().is_some());
+                assert!(ssmeta.browser_version().is_some());
+                assert!(ssmeta.platform_name().is_some());
+                assert!(ssmeta.browser_profile().is_none());
             }
         }
     }

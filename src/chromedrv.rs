@@ -108,7 +108,13 @@ impl WebDrvClient<ChromeDriver> {
 
             match deser_result {
                 Ok(sess) => {
-                    self.add_ssmeta(sess.session_id().to_string(), None);
+                    self.add_ssmeta(
+                        sess.session_id().to_string(),
+                        Some(sess.browser_name().to_string()),
+                        Some(sess.browser_version().to_string()),
+                        Some(sess.platform_name().to_string()),
+                        None,
+                    );
                     Ok(())
                 }
                 _ => Err(WdcError::Buggy),

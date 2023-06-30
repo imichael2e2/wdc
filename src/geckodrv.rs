@@ -186,7 +186,10 @@ impl WebDrvClient<GeckoDriver> {
                 Ok(sess) => {
                     self.add_ssmeta(
                         sess.session_id().to_string(),
-                        sess.profile().map(|v| v.to_string()),
+                        Some(sess.browser_name().to_string()),
+                        Some(sess.browser_version().to_string()),
+                        Some(sess.platform_name().to_string()),
+                        Some(sess.profile().to_string()),
                     );
                     Ok(())
                 }

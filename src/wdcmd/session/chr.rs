@@ -875,6 +875,38 @@ where
 /// The ChromeDriver-specific session result.
 pub type ChromSessResult<'c> = comm::CommSessResult<ChromiumCapa<'c>>;
 
+impl ChromSessResult<'_> {
+    #[inline]
+    pub fn browser_name(&self) -> &str {
+        &self
+            .value
+            .capabilities
+            .browser_name
+            .as_ref()
+            .expect("buggy")
+    }
+
+    #[inline]
+    pub fn browser_version(&self) -> &str {
+        &self
+            .value
+            .capabilities
+            .browser_version
+            .as_ref()
+            .expect("buggy")
+    }
+
+    #[inline]
+    pub fn platform_name(&self) -> &str {
+        &self
+            .value
+            .capabilities
+            .platform_name
+            .as_ref()
+            .expect("buggy")
+    }
+}
+
 mod ser {
     use serde::ser::{Serialize, SerializeStruct, Serializer};
 
