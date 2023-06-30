@@ -481,7 +481,26 @@ where
     C: w3c::W3cCapaGetter,
 {
     session_id: String,
-    #[allow(dead_code)] // FIXME: the returned capa need to be accessible
+
+    //
+    // Why not more specific, like `capabilities: CommCapa<X,A,L>?`
+    // Rationale: due to serde's map-based deserialization mechanism, if
+    // use CommCapa, structure is fixed for all drivers, which means
+    // the map we got when deserializing is fixed, for CommCapa<X,A,L>, this
+    // means all standard-defined capabilities can be deserialize immediately,
+    // but as for its X,A,L, deserialization should be delegated to themselves.
+    // this works theoretically but not practically at all: gecko's
+    // session result is a nearly 100% flatten map, chrome's one is the
+    // combination of flatten map and enclosed map, and nearly 50%-50%
+    // for each of them, it is impossible to unify these characteristics, and
+    // even some of chrome capabilities' placement are more unpredictable than
+    // gecko's ones. Hence we strictly follow WebDriver standard's rules
+    // (#dfn-new-sessions - 11): all details leave to implementation, which
+    // means generic <C>.
+    // Note that, this workaround has one major drawback: all standard-defined
+    // capabilities like browserName, browserVersion are hidden here. Although
+    // this is considered "drawback", it could be fixed by the future
+    // WebDriver standard.
     pub(crate) capabilities: C,
 }
 
