@@ -35,6 +35,8 @@ use crate::wsp::WebSocketHandshaker;
 use crate::wsp::WebSocketMessage;
 use crate::wsp::WspSett;
 
+use crate::genericdrv::SessionMeta;
+
 use crate::genericdrv::check_fail_drvcmd;
 #[cfg(feature = "chromium")]
 use crate::ChromeDriver;
@@ -66,7 +68,7 @@ impl CreateBidiClient for GeckoDriver {
             rport,
             http_stream: None,
             ws_stream: None,
-            ssids: vec![],
+            ssmetas: vec![],
             ctxlist: vec![],
         }
     }
@@ -81,7 +83,7 @@ impl CreateBidiClient for ChromeDriver {
             rport,
             http_stream: None,
             ws_stream: None,
-            ssids: vec![],
+            ssmetas: vec![],
             ctxlist: vec![],
         }
     }
@@ -100,7 +102,7 @@ where
     pub(crate) rport: u16,
     pub(crate) http_stream: Option<Arc<Mutex<TcpStream>>>,
     pub(crate) ws_stream: Option<Arc<Mutex<TcpStream>>>,
-    pub(crate) ssids: Vec<String>,
+    pub(crate) ssmetas: Vec<SessionMeta>,
     pub(crate) ctxlist: Vec<String>,
 }
 
@@ -109,10 +111,11 @@ where
     D: CreateBidiClient + for<'de, 'c1, 'c2> CreateW3cSession<'de, 'c1, 'c2>,
 {
     fn drop(&mut self) {
-        for i in 0..self.ssids.len() {
-            let ssid = &self.ssids[i];
-            self.del_session(ssid).expect("delete driver session");
-            self.ssids.remove(i);
+        for i in 0..self.ssmetas.len() {
+            let ssmeta = &self.ssmetas[i];
+            self.del_session(&ssmeta.ssid)
+                .expect("delete driver session");
+            self.ssmetas.remove(i);
         }
     }
 }
@@ -351,6 +354,9 @@ where
         // }
         let respdata_as_string = String::from_utf8_lossy(&respdata).to_string();
         if respdata_as_string.contains("result") {
+            // the ctxtree result from server currently is not much
+            // self-described, maybe due to active development of new std,
+            // thus leave this as trivial implementation
             Ok(self)
         } else {
             Err(WdcError::Buggy)
@@ -363,8 +369,8 @@ where
 
     // private
 
-    fn add_ssid(&mut self, ssid: String) {
-        self.ssids.push(ssid);
+    pub(crate) fn add_ssmeta(&mut self, ssid: String, profile: Option<String>) {
+        self.ssmetas.push(SessionMeta { ssid, profile });
     }
 
     fn raddr(&self) -> String {
@@ -459,7 +465,7 @@ where
 
             match deser_result {
                 Ok(sess) => {
-                    self.add_ssid(sess.session_id().to_string());
+                    self.add_ssmeta(sess.session_id().to_string(), None);
 
                     // FIXME: maybe RE is overkill?
                     let re = regex::Regex::new(r"ws://(.*)/session/(.*)").unwrap();

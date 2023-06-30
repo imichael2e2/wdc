@@ -39,7 +39,7 @@
 //!
 //! ## Navigate to website:
 //!
-//! ```
+//! ```ignore
 //! use wdc::{GeckoDriver, WdcError, WebDrvClient};
 //!
 //! go_w3c().unwrap();
@@ -57,7 +57,7 @@
 //!
 //! ## Run Javascript on website:
 //!
-//! ```
+//! ```ignore
 //! use wdc::{GeckoDriver, WdcError, WebDrvClient};
 //!
 //! check_out_w3c_history().unwrap();

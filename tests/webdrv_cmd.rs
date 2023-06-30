@@ -278,6 +278,8 @@ mod webdrv_cmds {
 
             #[test]
             fn _1() {
+                // some UI interactions
+
                 let mut capa = FirefoxCapa::default();
                 // capa.set_timeouts_page_load(2000);
                 capa.set_proxy_type("manual");
@@ -317,11 +319,26 @@ mod webdrv_cmds {
                 assert!(String::from_utf8_lossy(&table_content)
                     .contains(r"network.proxy.socks_remote_dns\ttrue"));
             }
+
+            #[test]
+            fn _2() {
+                let mut capa = FirefoxCapa::default();
+                let wdc = wdc::init_singl_ff(REND_HOST, REND_PORT, &capa, 10).expect("init wdc");
+                let ssmeta = wdc.last_session_meta().expect("buggy");
+
+                dbg!(&ssmeta);
+                assert!(ssmeta.1.is_some());
+            }
         }
     }
 
+    // ATTENTION: don't run chrom's tests under proxy frontend, proxychains
+    //            for example. bc chromium's child processes use host network
+    //            (localhost/127.0.0.1) as ipc channel, all communications
+    //            will likely fail.
     #[cfg(feature = "chromium")]
     mod chrom {
+
         use super::*;
         use wdc::wdcmd::session::ChromiumCapa;
         use wdc::ChromeDriver;
@@ -643,6 +660,22 @@ mod webdrv_cmds {
                 }
 
                 let _eval_ret = wdc.perform_actions(actg).expect("perform actions");
+            }
+        }
+
+        mod non_w3c {
+            use super::*;
+
+            #[test]
+            fn _2() {
+                // similar to gecko:::non_w3c::_2
+
+                let mut capa = ChromiumCapa::default();
+                let wdc = wdc::init_singl_ch(REND_HOST, REND_PORT, &capa, 10).expect("init wdc");
+                let ssmeta = wdc.last_session_meta().expect("buggy");
+
+                dbg!(&ssmeta);
+                assert!(ssmeta.1.is_none());
             }
         }
     }

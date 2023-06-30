@@ -44,7 +44,7 @@ impl CreateWebDrvClient for GeckoDriver {
             rhost: rhost.to_string(),
             rport,
             rstream: None,
-            ssids: vec![],
+            ssmetas: vec![],
         }
     }
 
@@ -184,7 +184,10 @@ impl WebDrvClient<GeckoDriver> {
 
             match deser_result {
                 Ok(sess) => {
-                    self.add_ssid(sess.session_id().to_string());
+                    self.add_ssmeta(
+                        sess.session_id().to_string(),
+                        sess.profile().map(|v| v.to_string()),
+                    );
                     Ok(())
                 }
                 _ => Err(WdcError::Buggy),

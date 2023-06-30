@@ -118,6 +118,7 @@ Put WebDriver servers in ready position, before "cargo test" command.
 help		Display help message
 reset		Bring down all WebDriver servers and clean up temporary files
 all		Prepare for all supported drivers
+		(kill and restart drivers if running)
 gecko		Prepare for GeckoDriver
 chrome		Prepare for ChromeDriver
 

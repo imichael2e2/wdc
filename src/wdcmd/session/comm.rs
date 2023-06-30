@@ -472,17 +472,17 @@ pub struct CommSessResult<C>
 where
     C: w3c::W3cCapaGetter,
 {
-    value: CommSessResultVal<C>,
+    pub(crate) value: CommSessResultVal<C>,
 }
 
 #[derive(Default, Debug)]
-struct CommSessResultVal<C>
+pub(crate) struct CommSessResultVal<C>
 where
     C: w3c::W3cCapaGetter,
 {
     session_id: String,
     #[allow(dead_code)] // FIXME: the returned capa need to be accessible
-    capabilities: C,
+    pub(crate) capabilities: C,
 }
 
 impl Default for Timeouts {
@@ -502,6 +502,7 @@ where
     fn session_id(&self) -> &str {
         &self.value.session_id
     }
+
     fn wsurl(&self) -> Option<&str> {
         self.value.capabilities.wsurl()
     }

@@ -94,6 +94,12 @@ where
     type SessResult: Deserialize<'de> + W3cSessResultGetter;
 }
 
+#[derive(Debug)]
+pub(crate) struct SessionMeta {
+    pub(crate) ssid: String,
+    pub(crate) profile: Option<String>,
+}
+
 // WebDrvClient //
 
 ///
@@ -115,7 +121,7 @@ where
     pub(crate) rhost: String,
     pub(crate) rport: u16,
     pub(crate) rstream: Option<Arc<Mutex<TcpStream>>>,
-    pub(crate) ssids: Vec<String>,
+    pub(crate) ssmetas: Vec<SessionMeta>,
 }
 
 impl<D> Drop for WebDrvClient<D>
@@ -123,10 +129,11 @@ where
     D: CreateWebDrvClient + for<'de, 'c1, 'c2> CreateW3cSession<'de, 'c1, 'c2>,
 {
     fn drop(&mut self) {
-        for i in 0..self.ssids.len() {
-            let ssid = &self.ssids[i];
-            self.del_session(ssid).expect("delete driver session");
-            self.ssids.remove(i);
+        for i in 0..self.ssmetas.len() {
+            let ssmeta = &self.ssmetas[i];
+            self.del_session(&ssmeta.ssid)
+                .expect("delete driver session");
+            self.ssmetas.remove(i);
         }
     }
 }
@@ -187,10 +194,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
         let mut req = HttpRequestParts::from_scratch();
 
@@ -228,10 +235,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -258,10 +265,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -297,10 +304,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -339,10 +346,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -377,10 +384,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -412,10 +419,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -449,10 +456,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -492,10 +499,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -528,10 +535,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -578,10 +585,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -622,10 +629,10 @@ where
         if self.rstream.is_none() {
             return Err(WdcError::WebDriverRemoteConnectionFailed);
         };
-        if self.ssids.len() == 0 {
+        if self.ssmetas.len() == 0 {
             return Err(WdcError::Buggy);
         }
-        let ssid = &self.ssids[0];
+        let ssid = &self.ssmetas[0].ssid;
         let mut stream = self.rstream.as_ref().unwrap().lock().unwrap();
 
         let mut req = HttpRequestParts::from_scratch();
@@ -653,10 +660,23 @@ where
         }
     }
 
-    // private
+    pub fn last_session_meta(&self) -> Result<(&str, Option<&str>), WdcError> {
+        if self.ssmetas.len() == 0 {
+            return Err(WdcError::Buggy);
+        }
 
-    pub(crate) fn add_ssid(&mut self, ssid: String) {
-        self.ssids.push(ssid);
+        let lelem = self.ssmetas.last().expect("buggy");
+
+        Ok((
+            lelem.ssid.as_str(),
+            lelem.profile.as_ref().map(|v| v.as_str()),
+        ))
+    }
+
+    // private //
+
+    pub(crate) fn add_ssmeta(&mut self, ssid: String, profile: Option<String>) {
+        self.ssmetas.push(SessionMeta { ssid, profile });
     }
 
     pub(crate) fn raddr(&self) -> String {
@@ -722,7 +742,8 @@ where
 
             match deser_result {
                 Ok(sess) => {
-                    self.add_ssid(sess.session_id().to_string());
+                    // self.add_ssid(sess.session_id().to_string());
+                    self.add_ssmeta(sess.session_id().to_string(), None);
                     Ok(())
                 }
                 Err(_e) => {
@@ -782,7 +803,7 @@ where
 
             match deser_result {
                 Ok(sess) => {
-                    self.add_ssid(sess.session_id().to_string());
+                    self.add_ssmeta(sess.session_id().to_string(), None);
                     Ok(())
                 }
                 _ => Err(WdcError::Buggy),
@@ -847,7 +868,7 @@ where
 
             match deser_result {
                 Ok(sess) => {
-                    self.add_ssid(sess.session_id().to_string());
+                    self.add_ssmeta(sess.session_id().to_string(), None);
                     Ok(())
                 }
                 _ => Err(WdcError::Buggy),
@@ -1047,12 +1068,12 @@ mod utst {
                 assert!(false, "rend is down");
             }
             assert_eq!(wdc.rstream.is_some(), true);
-            assert_eq!(wdc.ssids.len() > 0, true);
+            assert_eq!(wdc.ssmetas.len() > 0, true);
             assert_eq!(wdc.is_ready().is_err(), true);
             if let Err(e) = wdc.is_ready() {
                 assert_eq!(e, WdcError::DriverNotReadyBusySession);
             }
-            let ssid = wdc.ssids[0].clone();
+            let ssid = wdc.ssmetas[0].ssid.clone();
 
             drop(wdc);
 
@@ -1085,12 +1106,12 @@ mod utst {
                 assert!(false, "rend is down");
             }
             assert_eq!(wdc.rstream.is_some(), true);
-            assert_eq!(wdc.ssids.len() > 0, true);
+            assert_eq!(wdc.ssmetas.len() > 0, true);
             assert_eq!(wdc.is_ready().is_err(), true);
             if let Err(e) = wdc.is_ready() {
                 assert_eq!(e, WdcError::DriverNotReadyBusySession);
             }
-            let ssid = wdc.ssids[0].clone();
+            let ssid = wdc.ssmetas[0].ssid.clone();
 
             drop(wdc);
 
@@ -1123,12 +1144,12 @@ mod utst {
                 assert!(false, "rend is down");
             }
             assert_eq!(wdc.rstream.is_some(), true);
-            assert_eq!(wdc.ssids.len() > 0, true);
+            assert_eq!(wdc.ssmetas.len() > 0, true);
             assert_eq!(wdc.is_ready().is_err(), true);
             if let Err(e) = wdc.is_ready() {
                 assert_eq!(e, WdcError::DriverNotReadyBusySession);
             }
-            let ssid = wdc.ssids[0].clone();
+            let ssid = wdc.ssmetas[0].ssid.clone();
 
             drop(wdc);
 
@@ -1161,12 +1182,12 @@ mod utst {
                 assert!(false, "rend is down");
             }
             assert_eq!(wdc.rstream.is_some(), true);
-            assert_eq!(wdc.ssids.len() > 0, true);
+            assert_eq!(wdc.ssmetas.len() > 0, true);
             assert_eq!(wdc.is_ready().is_err(), true);
             if let Err(e) = wdc.is_ready() {
                 assert_eq!(e, WdcError::DriverNotReadyBusySession);
             }
-            let ssid = wdc.ssids[0].clone();
+            let ssid = wdc.ssmetas[0].ssid.clone();
 
             drop(wdc);
 
@@ -1193,8 +1214,8 @@ mod utst {
         #[test]
         fn session_id1() {
             let wdc = init::<GeckoDriver>("127.0.0.1", 4444, 10).expect("init wdc");
-            assert!(wdc.ssids.len() == 1);
-            assert!(is_uuid(&wdc.ssids[0]));
+            assert!(wdc.ssmetas.len() == 1);
+            assert!(is_uuid(&wdc.ssmetas[0].ssid));
         }
     }
 
@@ -1216,9 +1237,9 @@ mod utst {
                 assert!(false, "rend is down");
             }
             assert_eq!(wdc.rstream.is_some(), true);
-            assert_eq!(wdc.ssids.len() > 0, true);
+            assert_eq!(wdc.ssmetas.len() > 0, true);
             assert_eq!(wdc.is_ready().is_ok(), true);
-            let ssid = wdc.ssids[0].clone();
+            let ssid = wdc.ssmetas[0].ssid.clone();
 
             drop(wdc);
 
@@ -1251,9 +1272,9 @@ mod utst {
                 assert!(false, "rend is down");
             }
             assert_eq!(wdc.rstream.is_some(), true);
-            assert_eq!(wdc.ssids.len() > 0, true);
+            assert_eq!(wdc.ssmetas.len() > 0, true);
             assert_eq!(wdc.is_ready().is_ok(), true);
-            let ssid = wdc.ssids[0].clone();
+            let ssid = wdc.ssmetas[0].ssid.clone();
 
             drop(wdc);
 
@@ -1286,9 +1307,9 @@ mod utst {
                 assert!(false, "rend is down");
             }
             assert_eq!(wdc.rstream.is_some(), true);
-            assert_eq!(wdc.ssids.len() > 0, true);
+            assert_eq!(wdc.ssmetas.len() > 0, true);
             assert_eq!(wdc.is_ready().is_ok(), true);
-            let ssid = wdc.ssids[0].clone();
+            let ssid = wdc.ssmetas[0].ssid.clone();
 
             drop(wdc);
 
@@ -1321,9 +1342,9 @@ mod utst {
                 assert!(false, "rend is down");
             }
             assert_eq!(wdc.rstream.is_some(), true);
-            assert_eq!(wdc.ssids.len() > 0, true);
+            assert_eq!(wdc.ssmetas.len() > 0, true);
             assert_eq!(wdc.is_ready().is_ok(), true);
-            let ssid = wdc.ssids[0].clone();
+            let ssid = wdc.ssmetas[0].ssid.clone();
 
             drop(wdc);
 
@@ -1350,8 +1371,8 @@ mod utst {
         #[test]
         fn session_id1() {
             let wdc = init::<ChromeDriver>("127.0.0.1", 9515, 10).expect("init wdc");
-            assert!(wdc.ssids.len() == 1);
-            assert!(is_uuid_nodash(&wdc.ssids[0]));
+            assert!(wdc.ssmetas.len() == 1);
+            assert!(is_uuid_nodash(&wdc.ssmetas[0].ssid));
         }
     }
 

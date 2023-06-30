@@ -76,11 +76,12 @@ use std::collections::BTreeMap;
 
 #[derive(Default, Debug)]
 pub struct FirefoxSesExtCap<'c> {
+    // optional because these might be absent in either of ser or deser.
     binary: Option<Cow<'c, str>>,
     args: Option<Vec<Cow<'c, str>>>,
     profile: Option<Cow<'c, str>>,
     prefs: Option<VarValTypeMap<Cow<'c, str>, Cow<'c, str>>>,
-    // android_package: Option<String>, // FIXME: finish related impl
+    // android_package: Option<String>,
 }
 
 #[derive(Default, Debug)]
@@ -345,10 +346,10 @@ where
         }
     }
     fn set_profile(&mut self, arg: &'c str) {
-        self.ext.binary = Some(Cow::from(arg));
+        self.ext.profile = Some(Cow::from(arg));
     }
     fn set_profile_take(&mut self, arg: String) {
-        self.ext.binary = Some(Cow::from(arg));
+        self.ext.profile = Some(Cow::from(arg));
     }
     fn set_prefs(&mut self, arg: BTreeMap<&'c str, &'c str>) {
         let mut newone = VarValTypeMap::<Cow<'c, str>, Cow<'c, str>>::default();
@@ -431,6 +432,12 @@ where
 ///
 /// The GeckoDriver-specific session result.
 pub type GeckoSessResult<'c> = comm::CommSessResult<FirefoxCapa<'c>>;
+
+impl GeckoSessResult<'_> {
+    pub fn profile(&self) -> Option<&str> {
+        self.value.capabilities.ext.profile.as_deref()
+    }
+}
 
 mod ser {
     use serde::ser::{Serialize, SerializeStruct, Serializer};
@@ -674,7 +681,7 @@ mod deser {
         where
             A: MapAccess<'de>,
         {
-            // FIXME: once wdcmd becomes crate, these should be unified
+            // FIXME: this should be unified
             macro_rules! decl {
                 // declare a local var, consisting of field
                 // identifier and its value's type.
@@ -941,7 +948,7 @@ mod deser {
         where
             D: Deserializer<'de>,
         {
-            deserializer.deserialize_struct("CmdRespChrom106", FIELD_JSON_NAMES, StructVisitor)
+            deserializer.deserialize_struct("FirefoxCapa", FIELD_JSON_NAMES, StructVisitor)
         }
     }
 }

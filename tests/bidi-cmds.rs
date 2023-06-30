@@ -18,10 +18,10 @@
 #[allow(dead_code)]
 mod bidi_cmds {
 
-    use wdc::{ChromeDriver, GeckoDriver};
-
+    #[cfg(feature = "firefox")]
     mod gecko {
-        use super::*;
+        use wdc::GeckoDriver;
+
         type RendKind = GeckoDriver;
         const REND_HOST: &str = "127.0.0.1";
         const REND_PORT: u16 = 4444;
@@ -38,15 +38,16 @@ mod bidi_cmds {
                 assert_eq!(wdc.ctxlist().len(), 1);
                 // wdc.navi(wdc.ctxlist()[0], "http://w3.org/standards")
                 wdc.navi(wdc.ctxlist()[0], "about:rights").expect("navi");
-                wdc.ctx_tree().expect("ctx tree");
-                // sleep(Duration::from_secs(100));
+                let res = wdc.ctx_tree().expect("ctx tree");
+                dbg!(&res);
             }
         }
     }
 
     #[cfg(feature = "chromium")]
     mod chrom {
-        use super::*;
+        use wdc::ChromeDriver;
+
         type RendKind = ChromeDriver;
         const REND_HOST: &str = "127.0.0.1";
         const REND_PORT: u16 = 9515;
